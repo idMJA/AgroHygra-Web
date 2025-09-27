@@ -1,103 +1,207 @@
-import Image from "next/image";
+"use client";
+
+import { useMqtt } from "@/hooks/useMqtt";
+import { SensorCard } from "@/components/SensorCard";
+import { PumpControl } from "@/components/PumpControl";
+import { SystemInfo } from "@/components/SystemInfo";
+import { MqttDiagnostics } from "@/components/MqttDiagnostics";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Activity, Droplets, Settings } from "lucide-react";
 
 export default function Home() {
-  return (
-    <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+	const {
+		sensorData,
+		pumpStatus,
+		systemStatus,
+		logs,
+		isConnected,
+		error,
+		sendPumpCommand,
+		clearLogs,
+		// new fields from hook
+		lastReceived,
+		justReceived,
+	} = useMqtt();
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+	return (
+		<div className="min-h-screen bg-background">
+			{/* Header */}
+			<header className="border-b bg-card">
+				<div className="container mx-auto px-4 py-4">
+					<div className="flex items-center justify-between">
+						<div className="flex items-center gap-3">
+							<Droplets className="h-8 w-8 text-green-600" />
+							<div>
+								<h1 className="text-2xl font-bold">AgroHygra</h1>
+								<p className="text-sm text-muted-foreground">
+									Smart Agriculture Monitoring System
+								</p>
+							</div>
+						</div>
+						<div className="flex items-center gap-2">
+							<Badge variant={isConnected ? "default" : "destructive"}>
+								{isConnected ? "Connected" : "Disconnected"}
+							</Badge>
+							{error && <Badge variant="destructive">Error</Badge>}
+						</div>
+					</div>
+				</div>
+			</header>
+
+			{/* Main Content */}
+			<main className="container mx-auto px-4 py-6">
+				<Tabs defaultValue="dashboard" className="w-full">
+					<TabsList className="grid w-full grid-cols-3">
+						<TabsTrigger value="dashboard" className="flex items-center gap-2">
+							<Activity className="h-4 w-4" />
+							Dashboard
+						</TabsTrigger>
+						<TabsTrigger value="control" className="flex items-center gap-2">
+							<Droplets className="h-4 w-4" />
+							Pump Control
+						</TabsTrigger>
+						<TabsTrigger value="system" className="flex items-center gap-2">
+							<Settings className="h-4 w-4" />
+							System
+						</TabsTrigger>
+					</TabsList>
+
+					<TabsContent value="dashboard" className="space-y-6 mt-6">
+						<SensorCard
+							data={sensorData}
+							isConnected={isConnected}
+							lastReceived={lastReceived}
+							justReceived={justReceived}
+						/>
+
+						<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+							<PumpControl
+								pumpStatus={pumpStatus}
+								isConnected={isConnected}
+								onPumpCommand={sendPumpCommand}
+								error={error}
+							/>
+
+							{/* Quick Stats */}
+							<div className="space-y-4">
+								<h3 className="text-lg font-semibold">Quick Stats</h3>
+								{sensorData ? (
+									<div className="grid grid-cols-2 gap-4">
+										<div className="p-4 border rounded-lg">
+											<div className="text-sm text-muted-foreground">
+												Device
+											</div>
+											<div className="font-semibold">{sensorData.device}</div>
+										</div>
+										<div className="p-4 border rounded-lg">
+											<div className="text-sm text-muted-foreground">
+												Uptime
+											</div>
+											<div className="font-semibold">
+												{Math.floor(sensorData.uptime / 3600)}h{" "}
+												{Math.floor((sensorData.uptime % 3600) / 60)}m
+											</div>
+										</div>
+										<div className="p-4 border rounded-lg">
+											<div className="text-sm text-muted-foreground">
+												Watering Count
+											</div>
+											<div className="font-semibold">
+												{sensorData.count}
+											</div>
+										</div>
+										<div className="p-4 border rounded-lg">
+											<div className="text-sm text-muted-foreground">
+												Total Watering
+											</div>
+											<div className="font-semibold">
+												{sensorData.wtime}s
+											</div>
+										</div>
+									</div>
+								) : (
+									<div className="text-muted-foreground">No data available</div>
+								)}
+							</div>
+						</div>
+					</TabsContent>
+
+					<TabsContent value="control" className="mt-6">
+						<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+							<PumpControl
+								pumpStatus={pumpStatus}
+								isConnected={isConnected}
+								onPumpCommand={sendPumpCommand}
+								error={error}
+							/>
+
+							<div className="space-y-4">
+								<h3 className="text-lg font-semibold">Pump Information</h3>
+								<div className="space-y-2 text-sm">
+									<p>
+										<strong>Current Status:</strong>{" "}
+										{pumpStatus ? "Running" : "Stopped"}
+									</p>
+									<p>
+										<strong>Connection:</strong>{" "}
+										{isConnected ? "Connected" : "Disconnected"}
+									</p>
+									<p>
+										<strong>MQTT Topic:</strong> agrohygra/pump/command
+									</p>
+									<p>
+										<strong>Supported Commands:</strong> ON, OFF, 1, 0,{" "}
+										{`{"pump": true}`}
+									</p>
+								</div>
+
+								<Separator />
+
+								<div className="space-y-2">
+									<h4 className="font-medium">Safety Notes:</h4>
+									<ul className="text-sm text-muted-foreground space-y-1">
+										<li>• Always monitor soil moisture levels</li>
+										<li>• Use emergency stop if needed</li>
+										<li>• Check system logs for errors</li>
+										<li>• Ensure proper water supply</li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</TabsContent>
+
+					<TabsContent value="system" className="mt-6">
+						<div className="space-y-6">
+							<MqttDiagnostics
+								isConnected={isConnected}
+								error={error}
+								logs={logs}
+								clearLogs={clearLogs}
+								sensorData={sensorData}
+								systemStatus={systemStatus}
+							/>
+							<SystemInfo
+								systemStatus={systemStatus}
+								logs={logs}
+								isConnected={isConnected}
+								onClearLogs={clearLogs}
+							/>
+						</div>
+					</TabsContent>
+				</Tabs>
+			</main>
+
+			{/* Footer */}
+			<footer className="border-t mt-12">
+				<div className="container mx-auto px-4 py-4">
+					<div className="flex items-center justify-between text-sm text-muted-foreground">
+						<p>AgroHygra - Smart Agriculture Monitoring System</p>
+						<p>MQTT Broker: broker.hivemq.com:8884 (WSS)</p>
+					</div>
+				</div>
+			</footer>
+		</div>
+	);
 }
