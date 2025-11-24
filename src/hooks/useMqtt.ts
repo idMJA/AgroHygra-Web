@@ -3,6 +3,16 @@
 import { useEffect, useState, useCallback } from "react";
 import mqtt, { type MqttClient } from "mqtt";
 
+export interface NPKData {
+	n: number;        // Nitrogen (mg/kg)
+	p: number;        // Phosphorus (mg/kg)
+	k: number;        // Potassium (mg/kg)
+	ph: number;       // pH level
+	ec: number;       // Electrical conductivity (mS/cm)
+	soilTemp: number; // Soil temperature (°C)
+	soilMoist: number; // Soil moisture (%)
+}
+
 export interface SensorData {
     device: string;
     time: number;
@@ -17,6 +27,9 @@ export interface SensorData {
     count: number;
     wtime: number;
     uptime: number;
+    tdsRaw?: number;
+    tds?: number;
+    npk?: NPKData;
 }
 
 interface SystemStatus {

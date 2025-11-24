@@ -8,7 +8,8 @@ import { MqttDiagnostics } from "@/components/MqttDiagnostics";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Droplets, Settings } from "lucide-react";
+import { Activity, Droplets, Settings, TrendingUp, Clock, Zap } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function Home() {
 	const {
@@ -25,35 +26,87 @@ export default function Home() {
 		justReceived,
 	} = useMqtt();
 
+	const containerVariants = {
+		hidden: { opacity: 0 },
+		visible: {
+			opacity: 1,
+			transition: {
+				staggerChildren: 0.1,
+			},
+		},
+	};
+
+	const itemVariants = {
+		hidden: { opacity: 0, y: 20 },
+		visible: {
+			opacity: 1,
+			y: 0,
+			transition: {
+				type: "spring" as const,
+				stiffness: 100,
+			},
+		},
+	};
+
 	return (
-		<div className="min-h-screen bg-background">
+		<div className="flex flex-col flex-1 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
 			{/* Header */}
-			<header className="border-b bg-card">
+			<motion.header
+				initial={{ y: -100 }}
+				animate={{ y: 0 }}
+				transition={{ type: "spring", stiffness: 100 }}
+				className="border-b bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm"
+			>
 				<div className="container mx-auto px-4 py-4">
 					<div className="flex items-center justify-between">
-						<div className="flex items-center gap-3">
-							<Droplets className="h-8 w-8 text-green-600" />
+						<motion.div
+							className="flex items-center gap-3"
+							whileHover={{ scale: 1.02 }}
+							transition={{ type: "spring", stiffness: 400 }}
+						>
+							<motion.div
+								animate={{ rotate: pumpStatus ? 360 : 0 }}
+								transition={{ duration: 2, repeat: pumpStatus ? Infinity : 0, ease: "linear" }}
+							>
+								<Droplets className="h-8 w-8 text-green-600" />
+							</motion.div>
 							<div>
-								<h1 className="text-2xl font-bold">AgroHygra</h1>
+								<h1 className="text-2xl font-bold bg-gradient-to-r from-green-600 to-blue-600 bg-clip-text text-transparent">
+									AgroHygra
+								</h1>
 								<p className="text-sm text-muted-foreground">
 									Smart Agriculture Monitoring System
 								</p>
 							</div>
-						</div>
+						</motion.div>
 						<div className="flex items-center gap-2">
-							<Badge variant={isConnected ? "default" : "destructive"}>
-								{isConnected ? "Connected" : "Disconnected"}
-							</Badge>
-							{error && <Badge variant="destructive">Error</Badge>}
+							<motion.div
+								key={isConnected ? 'connected' : 'disconnected'}
+								initial={{ scale: 0.8, opacity: 0 }}
+								animate={{ scale: 1, opacity: 1 }}
+								transition={{ duration: 0.3 }}
+							>
+								<Badge variant={isConnected ? "default" : "destructive"} className={isConnected ? 'bg-green-600' : ''}>
+									{isConnected ? "● Connected" : "○ Disconnected"}
+								</Badge>
+							</motion.div>
+							{error && (
+								<motion.div
+									initial={{ scale: 0.8, opacity: 0 }}
+									animate={{ scale: 1, opacity: 1 }}
+								>
+									<Badge variant="destructive">Error</Badge>
+								</motion.div>
+							)}
 						</div>
 					</div>
 				</div>
-			</header>
+			</motion.header>
 
 			{/* Main Content */}
-			<main className="container mx-auto px-4 py-6">
+			<main className="flex-1 container mx-auto px-4 py-6 w-full max-w-7xl">
 				<Tabs defaultValue="dashboard" className="w-full">
-					<TabsList className="grid w-full grid-cols-3">
+					<TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-md">
 						<TabsTrigger value="dashboard" className="flex items-center gap-2">
 							<Activity className="h-4 w-4" />
 							Dashboard
@@ -69,67 +122,115 @@ export default function Home() {
 					</TabsList>
 
 					<TabsContent value="dashboard" className="space-y-6 mt-6">
-						<SensorCard
-							data={sensorData}
-							isConnected={isConnected}
-							lastReceived={lastReceived}
-							justReceived={justReceived}
-						/>
+						<motion.div
+							variants={containerVariants}
+							initial="hidden"
+							animate="visible"
+						>
+							<motion.div variants={itemVariants}>
+								<SensorCard
+									data={sensorData}
+									isConnected={isConnected}
+									lastReceived={lastReceived}
+									justReceived={justReceived}
+								/>
+							</motion.div>
 
-						<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-							<PumpControl
-								pumpStatus={pumpStatus}
-								isConnected={isConnected}
-								onPumpCommand={sendPumpCommand}
-								error={error}
-							/>
+							<motion.div
+								variants={itemVariants}
+								className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6"
+							>
+								<PumpControl
+									pumpStatus={pumpStatus}
+									isConnected={isConnected}
+									onPumpCommand={sendPumpCommand}
+									error={error}
+								/>
 
-							{/* Quick Stats */}
-							<div className="space-y-4">
-								<h3 className="text-lg font-semibold">Quick Stats</h3>
-								{sensorData ? (
-									<div className="grid grid-cols-2 gap-4">
-										<div className="p-4 border rounded-lg">
-											<div className="text-sm text-muted-foreground">
-												Device
-											</div>
-											<div className="font-semibold">{sensorData.device}</div>
-										</div>
-										<div className="p-4 border rounded-lg">
-											<div className="text-sm text-muted-foreground">
-												Uptime
-											</div>
-											<div className="font-semibold">
-												{Math.floor(sensorData.uptime / 3600)}h{" "}
-												{Math.floor((sensorData.uptime % 3600) / 60)}m
-											</div>
-										</div>
-										<div className="p-4 border rounded-lg">
-											<div className="text-sm text-muted-foreground">
-												Watering Count
-											</div>
-											<div className="font-semibold">
-												{sensorData.count}
-											</div>
-										</div>
-										<div className="p-4 border rounded-lg">
-											<div className="text-sm text-muted-foreground">
-												Total Watering
-											</div>
-											<div className="font-semibold">
-												{sensorData.wtime}s
-											</div>
-										</div>
-									</div>
-								) : (
-									<div className="text-muted-foreground">No data available</div>
-								)}
-							</div>
-						</div>
+								{/* Quick Stats */}
+								<motion.div className="space-y-4">
+									<h3 className="text-lg font-semibold flex items-center gap-2">
+										<TrendingUp className="h-5 w-5 text-green-600" />
+										Quick Stats
+									</h3>
+									{sensorData ? (
+										<motion.div
+											variants={containerVariants}
+											initial="hidden"
+											animate="visible"
+											className="grid grid-cols-2 gap-4"
+										>
+											<motion.div
+												variants={itemVariants}
+												whileHover={{ scale: 1.03 }}
+												className="p-4 border rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 shadow-sm"
+											>
+												<div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+													<Zap className="h-3 w-3" />
+													Device
+												</div>
+												<div className="font-semibold text-sm">{sensorData.device}</div>
+											</motion.div>
+											<motion.div
+												variants={itemVariants}
+												whileHover={{ scale: 1.03 }}
+												className="p-4 border rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 shadow-sm"
+											>
+												<div className="text-xs text-muted-foreground mb-1 flex items-center gap-1">
+													<Clock className="h-3 w-3" />
+													Uptime
+												</div>
+												<div className="font-semibold text-sm">
+													{Math.floor(sensorData.uptime / 3600)}h{" "}
+													{Math.floor((sensorData.uptime % 3600) / 60)}m
+												</div>
+											</motion.div>
+											<motion.div
+												variants={itemVariants}
+												whileHover={{ scale: 1.03 }}
+												className="p-4 border rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 shadow-sm"
+											>
+												<div className="text-xs text-muted-foreground mb-1">
+													Watering Count
+												</div>
+												<div className="font-semibold text-lg text-green-600">
+													{sensorData.count}
+												</div>
+											</motion.div>
+											<motion.div
+												variants={itemVariants}
+												whileHover={{ scale: 1.03 }}
+												className="p-4 border rounded-xl bg-gradient-to-br from-orange-50 to-amber-50 shadow-sm"
+											>
+												<div className="text-xs text-muted-foreground mb-1">
+													Total Watering
+												</div>
+												<div className="font-semibold text-lg text-orange-600">
+													{sensorData.wtime}s
+												</div>
+											</motion.div>
+										</motion.div>
+									) : (
+										<motion.div
+											animate={{ opacity: [0.5, 1, 0.5] }}
+											transition={{ duration: 2, repeat: Infinity }}
+											className="text-muted-foreground p-8 text-center bg-white rounded-xl border"
+										>
+											No data available
+										</motion.div>
+									)}
+								</motion.div>
+							</motion.div>
+						</motion.div>
 					</TabsContent>
 
 					<TabsContent value="control" className="mt-6">
-						<div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5 }}
+							className="grid grid-cols-1 lg:grid-cols-2 gap-6"
+						>
 							<PumpControl
 								pumpStatus={pumpStatus}
 								isConnected={isConnected}
@@ -137,43 +238,79 @@ export default function Home() {
 								error={error}
 							/>
 
-							<div className="space-y-4">
+							<motion.div
+								initial={{ opacity: 0, x: 20 }}
+								animate={{ opacity: 1, x: 0 }}
+								transition={{ duration: 0.5, delay: 0.2 }}
+								className="space-y-4"
+							>
 								<h3 className="text-lg font-semibold">Pump Information</h3>
-								<div className="space-y-2 text-sm">
-									<p>
+								<div className="space-y-3 text-sm bg-white p-6 rounded-xl shadow-sm border">
+									<div className="flex items-center justify-between p-2 bg-gray-50 rounded">
 										<strong>Current Status:</strong>{" "}
-										{pumpStatus ? "Running" : "Stopped"}
-									</p>
-									<p>
+										<span className={pumpStatus ? "text-blue-600 font-medium" : "text-gray-600"}>
+											{pumpStatus ? "🌊 Running" : "⏸️ Stopped"}
+										</span>
+									</div>
+									<div className="flex items-center justify-between p-2 bg-gray-50 rounded">
 										<strong>Connection:</strong>{" "}
-										{isConnected ? "Connected" : "Disconnected"}
-									</p>
-									<p>
-										<strong>MQTT Topic:</strong> agrohygra/pump/command
-									</p>
-									<p>
-										<strong>Supported Commands:</strong> ON, OFF, 1, 0,{" "}
-										{`{"pump": true}`}
-									</p>
+										<span className={isConnected ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+											{isConnected ? "✅ Connected" : "❌ Disconnected"}
+										</span>
+									</div>
+									<div className="p-2 bg-gray-50 rounded">
+										<strong>MQTT Topic:</strong> 
+										<code className="ml-2 text-blue-600">agrohygra/pump/command</code>
+									</div>
+									<div className="p-2 bg-gray-50 rounded">
+										<strong>Supported Commands:</strong> 
+										<div className="mt-1 font-mono text-xs">
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">ON</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">OFF</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">1</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">0</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded">{`{"pump": true}`}</span>
+										</div>
+									</div>
 								</div>
 
 								<Separator />
 
-								<div className="space-y-2">
-									<h4 className="font-medium">Safety Notes:</h4>
-									<ul className="text-sm text-muted-foreground space-y-1">
-										<li>• Always monitor soil moisture levels</li>
-										<li>• Use emergency stop if needed</li>
-										<li>• Check system logs for errors</li>
-										<li>• Ensure proper water supply</li>
+								<div className="space-y-2 bg-amber-50 p-4 rounded-xl border border-amber-200">
+									<h4 className="font-medium flex items-center gap-2">
+										<Activity className="h-4 w-4 text-amber-600" />
+										Safety Notes:
+									</h4>
+									<ul className="text-sm text-muted-foreground space-y-1.5">
+										<li className="flex items-start gap-2">
+											<span className="text-amber-600 font-bold">•</span>
+											<span>Always monitor soil moisture levels</span>
+										</li>
+										<li className="flex items-start gap-2">
+											<span className="text-amber-600 font-bold">•</span>
+											<span>Use emergency stop if needed</span>
+										</li>
+										<li className="flex items-start gap-2">
+											<span className="text-amber-600 font-bold">•</span>
+											<span>Check system logs for errors</span>
+										</li>
+										<li className="flex items-start gap-2">
+											<span className="text-amber-600 font-bold">•</span>
+											<span>Ensure proper water supply</span>
+										</li>
 									</ul>
 								</div>
-							</div>
-						</div>
+							</motion.div>
+						</motion.div>
 					</TabsContent>
 
 					<TabsContent value="system" className="mt-6">
-						<div className="space-y-6">
+						<motion.div
+							initial={{ opacity: 0 }}
+							animate={{ opacity: 1 }}
+							transition={{ duration: 0.5 }}
+							className="space-y-6"
+						>
 							<MqttDiagnostics
 								isConnected={isConnected}
 								error={error}
@@ -188,20 +325,25 @@ export default function Home() {
 								isConnected={isConnected}
 								onClearLogs={clearLogs}
 							/>
-						</div>
+						</motion.div>
 					</TabsContent>
 				</Tabs>
 			</main>
 
 			{/* Footer */}
-			<footer className="border-t mt-12">
-				<div className="container mx-auto px-4 py-4">
-					<div className="flex items-center justify-between text-sm text-muted-foreground">
+			<motion.footer
+				initial={{ opacity: 0 }}
+				animate={{ opacity: 1 }}
+				transition={{ delay: 0.5 }}
+				className="border-t mt-auto bg-white/80 backdrop-blur-md w-full"
+			>
+				<div className="container mx-auto px-4 py-4 w-full max-w-7xl">
+					<div className="flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
 						<p>AgroHygra - Smart Agriculture Monitoring System</p>
-						<p>MQTT Broker: broker.hivemq.com:8884 (WSS)</p>
+						<p className="font-mono text-xs">MQTT: broker.hivemq.com:8884 (WSS)</p>
 					</div>
 				</div>
-			</footer>
+			</motion.footer>
 		</div>
 	);
 }
