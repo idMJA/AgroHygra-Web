@@ -1,15 +1,22 @@
 "use client";
 
-import { useMqtt } from "@/hooks/useMqtt";
-import { SensorCard } from "@/components/SensorCard";
-import { PumpControl } from "@/components/PumpControl";
-import { SystemInfo } from "@/components/SystemInfo";
+import { motion } from "framer-motion";
+import {
+	Activity,
+	Clock,
+	Droplets,
+	Settings,
+	TrendingUp,
+	Zap,
+} from "lucide-react";
 import { MqttDiagnostics } from "@/components/MqttDiagnostics";
+import { PumpControl } from "@/components/PumpControl";
+import { SensorCard } from "@/components/SensorCard";
+import { SystemInfo } from "@/components/SystemInfo";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Activity, Droplets, Settings, TrendingUp, Clock, Zap } from "lucide-react";
-import { motion } from "framer-motion";
+import { useMqtt } from "@/hooks/useMqtt";
 
 export default function Home() {
 	const {
@@ -66,7 +73,11 @@ export default function Home() {
 						>
 							<motion.div
 								animate={{ rotate: pumpStatus ? 360 : 0 }}
-								transition={{ duration: 2, repeat: pumpStatus ? Infinity : 0, ease: "linear" }}
+								transition={{
+									duration: 2,
+									repeat: pumpStatus ? Infinity : 0,
+									ease: "linear",
+								}}
 							>
 								<Droplets className="h-8 w-8 text-green-600" />
 							</motion.div>
@@ -81,12 +92,15 @@ export default function Home() {
 						</motion.div>
 						<div className="flex items-center gap-2">
 							<motion.div
-								key={isConnected ? 'connected' : 'disconnected'}
+								key={isConnected ? "connected" : "disconnected"}
 								initial={{ scale: 0.8, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								transition={{ duration: 0.3 }}
 							>
-								<Badge variant={isConnected ? "default" : "destructive"} className={isConnected ? 'bg-green-600' : ''}>
+								<Badge
+									variant={isConnected ? "default" : "destructive"}
+									className={isConnected ? "bg-green-600" : ""}
+								>
 									{isConnected ? "● Connected" : "○ Disconnected"}
 								</Badge>
 							</motion.div>
@@ -169,7 +183,9 @@ export default function Home() {
 													<Zap className="h-3 w-3" />
 													Device
 												</div>
-												<div className="font-semibold text-sm">{sensorData.device}</div>
+												<div className="font-semibold text-sm">
+													{sensorData.device}
+												</div>
 											</motion.div>
 											<motion.div
 												variants={itemVariants}
@@ -248,27 +264,49 @@ export default function Home() {
 								<div className="space-y-3 text-sm bg-white p-6 rounded-xl shadow-sm border">
 									<div className="flex items-center justify-between p-2 bg-gray-50 rounded">
 										<strong>Current Status:</strong>{" "}
-										<span className={pumpStatus ? "text-blue-600 font-medium" : "text-gray-600"}>
+										<span
+											className={
+												pumpStatus
+													? "text-blue-600 font-medium"
+													: "text-gray-600"
+											}
+										>
 											{pumpStatus ? "🌊 Running" : "⏸️ Stopped"}
 										</span>
 									</div>
 									<div className="flex items-center justify-between p-2 bg-gray-50 rounded">
 										<strong>Connection:</strong>{" "}
-										<span className={isConnected ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+										<span
+											className={
+												isConnected
+													? "text-green-600 font-medium"
+													: "text-red-600 font-medium"
+											}
+										>
 											{isConnected ? "✅ Connected" : "❌ Disconnected"}
 										</span>
 									</div>
 									<div className="p-2 bg-gray-50 rounded">
-										<strong>MQTT Topic:</strong> 
-										<code className="ml-2 text-blue-600">agrohygra/pump/command</code>
+										<strong>MQTT Topic:</strong>
+										<code className="ml-2 text-blue-600">
+											agrohygra/pump/command
+										</code>
 									</div>
 									<div className="p-2 bg-gray-50 rounded">
-										<strong>Supported Commands:</strong> 
+										<strong>Supported Commands:</strong>
 										<div className="mt-1 font-mono text-xs">
-											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">ON</span>
-											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">OFF</span>
-											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">1</span>
-											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">0</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">
+												ON
+											</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">
+												OFF
+											</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">
+												1
+											</span>
+											<span className="bg-blue-100 px-2 py-0.5 rounded mr-1">
+												0
+											</span>
 											<span className="bg-blue-100 px-2 py-0.5 rounded">{`{"pump": true}`}</span>
 										</div>
 									</div>
@@ -340,7 +378,9 @@ export default function Home() {
 				<div className="container mx-auto px-4 py-4 w-full max-w-7xl">
 					<div className="flex flex-col md:flex-row items-center justify-between gap-2 text-sm text-muted-foreground">
 						<p>AgroHygra - Smart Agriculture Monitoring System</p>
-						<p className="font-mono text-xs">MQTT: broker.hivemq.com:8884 (WSS)</p>
+						<p className="font-mono text-xs">
+							MQTT: broker.hivemq.com:8884 (WSS)
+						</p>
 					</div>
 				</div>
 			</motion.footer>

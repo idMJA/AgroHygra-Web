@@ -1,11 +1,17 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+	Activity,
+	AlertCircle,
+	MessageCircle,
+	Wifi,
+	WifiOff,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Wifi, WifiOff, Activity, MessageCircle, AlertCircle } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SensorData } from "@/hooks/useMqtt";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface SystemStatus {
 	device: string;
@@ -22,16 +28,18 @@ interface MqttDiagnosticsProps {
 	systemStatus: SystemStatus | null;
 }
 
-export function MqttDiagnostics({ 
-	isConnected, 
-	error, 
-	logs, 
+export function MqttDiagnostics({
+	isConnected,
+	error,
+	logs,
 	clearLogs,
 	sensorData,
-	systemStatus 
+	systemStatus,
 }: MqttDiagnosticsProps) {
-	const lastSensorUpdate = sensorData ? new Date(sensorData.time * 1000).toLocaleString() : 'Never';
-	
+	const lastSensorUpdate = sensorData
+		? new Date(sensorData.time * 1000).toLocaleString()
+		: "Never";
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -39,7 +47,9 @@ export function MqttDiagnostics({
 			transition={{ duration: 0.5 }}
 		>
 			<Card className="w-full overflow-hidden">
-				<CardHeader className={`${isConnected ? 'bg-gradient-to-r from-green-50 to-emerald-50' : 'bg-gradient-to-r from-red-50 to-orange-50'} transition-colors duration-500`}>
+				<CardHeader
+					className={`${isConnected ? "bg-gradient-to-r from-green-50 to-emerald-50" : "bg-gradient-to-r from-red-50 to-orange-50"} transition-colors duration-500`}
+				>
 					<CardTitle className="flex items-center gap-2">
 						<motion.div
 							animate={isConnected ? { scale: [1, 1.1, 1] } : { scale: 1 }}
@@ -54,13 +64,16 @@ export function MqttDiagnostics({
 						MQTT Diagnostics
 						<AnimatePresence mode="wait">
 							<motion.div
-								key={isConnected ? 'connected' : 'disconnected'}
+								key={isConnected ? "connected" : "disconnected"}
 								initial={{ scale: 0.8, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0.8, opacity: 0 }}
 								transition={{ duration: 0.2 }}
 							>
-								<Badge variant={isConnected ? "default" : "destructive"} className={isConnected ? 'bg-green-600' : ''}>
+								<Badge
+									variant={isConnected ? "default" : "destructive"}
+									className={isConnected ? "bg-green-600" : ""}
+								>
 									{isConnected ? "Connected" : "Disconnected"}
 								</Badge>
 							</motion.div>
@@ -81,10 +94,18 @@ export function MqttDiagnostics({
 								<span className="font-medium">Connection Status</span>
 							</div>
 							<div className="text-sm space-y-1 bg-blue-50 p-3 rounded-lg">
-								<div><strong>Broker:</strong> wss://broker.hivemq.com:8884/mqtt</div>
+								<div>
+									<strong>Broker:</strong> wss://broker.hivemq.com:8884/mqtt
+								</div>
 								<div className="flex items-center gap-2">
-									<strong>Status:</strong> 
-									<span className={isConnected ? "text-green-600 font-medium" : "text-red-600 font-medium"}>
+									<strong>Status:</strong>
+									<span
+										className={
+											isConnected
+												? "text-green-600 font-medium"
+												: "text-red-600 font-medium"
+										}
+									>
 										{isConnected ? "✅ Connected" : "❌ Disconnected"}
 									</span>
 								</div>
@@ -103,7 +124,7 @@ export function MqttDiagnostics({
 								</AnimatePresence>
 							</div>
 						</motion.div>
-						
+
 						<motion.div
 							initial={{ opacity: 0, x: 20 }}
 							animate={{ opacity: 1, x: 0 }}
@@ -116,18 +137,24 @@ export function MqttDiagnostics({
 							</div>
 							<div className="text-sm space-y-1 bg-purple-50 p-3 rounded-lg">
 								<div>
-									<strong>Last sensor data:</strong> 
-									<span className="ml-1 text-purple-700 font-medium">{lastSensorUpdate}</span>
+									<strong>Last sensor data:</strong>
+									<span className="ml-1 text-purple-700 font-medium">
+										{lastSensorUpdate}
+									</span>
 								</div>
 								<div>
-									<strong>System status:</strong> 
-									<span className={`ml-1 font-medium ${systemStatus ? 'text-green-600' : 'text-orange-600'}`}>
+									<strong>System status:</strong>
+									<span
+										className={`ml-1 font-medium ${systemStatus ? "text-green-600" : "text-orange-600"}`}
+									>
 										{systemStatus ? "✅ Received" : "⏳ Waiting"}
 									</span>
 								</div>
 								<div>
-									<strong>Total logs:</strong> 
-									<span className="ml-1 text-purple-700 font-medium">{logs.length}</span>
+									<strong>Total logs:</strong>
+									<span className="ml-1 text-purple-700 font-medium">
+										{logs.length}
+									</span>
 								</div>
 							</div>
 						</motion.div>
@@ -142,8 +169,16 @@ export function MqttDiagnostics({
 					>
 						<div className="flex items-center justify-between">
 							<span className="font-medium">Recent Logs (last 10)</span>
-							<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-								<Button variant="outline" size="sm" onClick={clearLogs} className="border-orange-200 hover:bg-orange-50">
+							<motion.div
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
+								<Button
+									variant="outline"
+									size="sm"
+									onClick={clearLogs}
+									className="border-orange-200 hover:bg-orange-50"
+								>
 									Clear Logs
 								</Button>
 							</motion.div>
@@ -187,10 +222,12 @@ export function MqttDiagnostics({
 						transition={{ delay: 0.4 }}
 						className="text-xs text-muted-foreground border-t pt-3 bg-amber-50 p-3 rounded-lg"
 					>
-						<strong>Debug:</strong> Check browser console for detailed MQTT messages. 
+						<strong>Debug:</strong> Check browser console for detailed MQTT
+						messages.
 						<br />
-						<strong>Expected topics:</strong> agrohygra/sensors (every 2s), agrohygra/system/status (retained), 
-						agrohygra/pump/status, agrohygra/logs
+						<strong>Expected topics:</strong> agrohygra/sensors (every 2s),
+						agrohygra/system/status (retained), agrohygra/pump/status,
+						agrohygra/logs
 					</motion.div>
 				</CardContent>
 			</Card>

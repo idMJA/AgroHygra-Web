@@ -1,10 +1,18 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+	Activity,
+	Beaker,
+	Droplet,
+	Sprout,
+	TestTube,
+	Thermometer,
+	Wind,
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Thermometer, Droplet, Wind, Sprout, Beaker, TestTube, Activity } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { SensorData } from "@/hooks/useMqtt";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface SensorCardProps {
 	data: SensorData | null;
@@ -18,12 +26,21 @@ interface ReceivedIndicatorProps {
 	justReceived?: boolean;
 }
 
-export function ReceivedIndicator({ lastReceived, justReceived = false }: ReceivedIndicatorProps) {
+export function ReceivedIndicator({
+	lastReceived,
+	justReceived = false,
+}: ReceivedIndicatorProps) {
 	return (
 		<motion.span
-			title={lastReceived ? `Last received: ${new Date(lastReceived).toLocaleString()}` : "No data yet"}
+			title={
+				lastReceived
+					? `Last received: ${new Date(lastReceived).toLocaleString()}`
+					: "No data yet"
+			}
 			className={`inline-block w-3 h-3 rounded-full mr-2 ${
-				justReceived ? "bg-green-500 shadow-lg shadow-green-500/50" : "bg-gray-300"
+				justReceived
+					? "bg-green-500 shadow-lg shadow-green-500/50"
+					: "bg-gray-300"
 			}`}
 			animate={{
 				scale: justReceived ? [1, 1.3, 1] : 1,
@@ -66,7 +83,14 @@ interface SensorItemProps {
 	badge?: React.ReactNode;
 }
 
-function SensorItem({ icon, label, value, unit, color = "text-gray-700", badge }: SensorItemProps) {
+function SensorItem({
+	icon,
+	label,
+	value,
+	unit,
+	color = "text-gray-700",
+	badge,
+}: SensorItemProps) {
 	return (
 		<motion.div
 			variants={itemVariants}
@@ -89,7 +113,12 @@ function SensorItem({ icon, label, value, unit, color = "text-gray-700", badge }
 	);
 }
 
-export function SensorCard({ data, isConnected, lastReceived = null, justReceived = false }: SensorCardProps) {
+export function SensorCard({
+	data,
+	isConnected,
+	lastReceived = null,
+	justReceived = false,
+}: SensorCardProps) {
 	const getAirQualityColor = (good: boolean) => {
 		return good ? "bg-green-500" : "bg-red-500";
 	};
@@ -128,7 +157,10 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 				<Card className="w-full">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
-							<ReceivedIndicator lastReceived={lastReceived} justReceived={justReceived} />
+							<ReceivedIndicator
+								lastReceived={lastReceived}
+								justReceived={justReceived}
+							/>
 							<Sprout className="h-5 w-5 text-green-600" />
 							Sensor Data
 							<Badge variant="destructive">Disconnected</Badge>
@@ -158,7 +190,10 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 				<Card className="w-full">
 					<CardHeader>
 						<CardTitle className="flex items-center gap-2">
-							<ReceivedIndicator lastReceived={lastReceived} justReceived={justReceived} />
+							<ReceivedIndicator
+								lastReceived={lastReceived}
+								justReceived={justReceived}
+							/>
 							<Sprout className="h-5 w-5 text-green-600" />
 							Sensor Data
 							<Badge variant="outline">Waiting for data</Badge>
@@ -190,10 +225,15 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 			<Card className="w-full overflow-hidden">
 				<CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
 					<CardTitle className="flex items-center gap-2">
-						<ReceivedIndicator lastReceived={lastReceived} justReceived={justReceived} />
+						<ReceivedIndicator
+							lastReceived={lastReceived}
+							justReceived={justReceived}
+						/>
 						<Sprout className="h-5 w-5 text-green-600" />
 						Sensor Data
-						<Badge variant="default" className="bg-green-600">Online</Badge>
+						<Badge variant="default" className="bg-green-600">
+							Online
+						</Badge>
 					</CardTitle>
 					<p className="text-sm text-muted-foreground">Device: {data.device}</p>
 				</CardHeader>
@@ -252,7 +292,9 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 					>
 						<div className="flex items-center gap-2 mb-2">
 							<Wind className="h-4 w-4 text-cyan-600" />
-							<span className="text-sm font-semibold text-cyan-900">Air Quality Details</span>
+							<span className="text-sm font-semibold text-cyan-900">
+								Air Quality Details
+							</span>
 						</div>
 						<div className="grid grid-cols-2 gap-4 text-sm">
 							<div>
@@ -261,7 +303,9 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 							</div>
 							<div>
 								<span className="text-muted-foreground">Raw ADC:</span>
-								<span className="ml-2 font-bold text-cyan-700">{data.airRaw}</span>
+								<span className="ml-2 font-bold text-cyan-700">
+									{data.airRaw}
+								</span>
 							</div>
 						</div>
 					</motion.div>
@@ -276,16 +320,22 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 						>
 							<div className="flex items-center gap-2 mb-2">
 								<Beaker className="h-4 w-4 text-purple-600" />
-								<span className="text-sm font-semibold text-purple-900">TDS Meter (Water Quality)</span>
+								<span className="text-sm font-semibold text-purple-900">
+									TDS Meter (Water Quality)
+								</span>
 							</div>
 							<div className="grid grid-cols-2 gap-4 text-sm">
 								<div>
 									<span className="text-muted-foreground">TDS Value:</span>
-									<span className="ml-2 font-bold text-purple-700">{data.tds || 0} ppm</span>
+									<span className="ml-2 font-bold text-purple-700">
+										{data.tds || 0} ppm
+									</span>
 								</div>
 								<div>
 									<span className="text-muted-foreground">Raw ADC:</span>
-									<span className="ml-2 font-bold text-purple-700">{data.tdsRaw || 0}</span>
+									<span className="ml-2 font-bold text-purple-700">
+										{data.tdsRaw || 0}
+									</span>
 								</div>
 							</div>
 						</motion.div>
@@ -303,7 +353,9 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 							>
 								<div className="flex items-center gap-2 mb-4">
 									<TestTube className="h-5 w-5 text-amber-600" />
-									<span className="text-lg font-bold text-amber-900">NPK Sensor 7-in-1 (RS485)</span>
+									<span className="text-lg font-bold text-amber-900">
+										NPK Sensor 7-in-1 (RS485)
+									</span>
 								</div>
 
 								<motion.div
@@ -312,57 +364,92 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 									animate="visible"
 									className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
 								>
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm">
-										<div className="text-xs text-muted-foreground mb-1">Nitrogen (N)</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											Nitrogen (N)
+										</div>
 										<div className="text-2xl font-bold text-amber-600">
 											{data.npk.n.toFixed(0)}
 											<span className="text-sm ml-1">mg/kg</span>
 										</div>
 									</motion.div>
 
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm">
-										<div className="text-xs text-muted-foreground mb-1">Phosphorus (P)</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											Phosphorus (P)
+										</div>
 										<div className="text-2xl font-bold text-orange-600">
 											{data.npk.p.toFixed(0)}
 											<span className="text-sm ml-1">mg/kg</span>
 										</div>
 									</motion.div>
 
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm">
-										<div className="text-xs text-muted-foreground mb-1">Potassium (K)</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											Potassium (K)
+										</div>
 										<div className="text-2xl font-bold text-yellow-600">
 											{data.npk.k.toFixed(0)}
 											<span className="text-sm ml-1">mg/kg</span>
 										</div>
 									</motion.div>
 
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm">
-										<div className="text-xs text-muted-foreground mb-1">pH Level</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											pH Level
+										</div>
 										<div className="text-2xl font-bold text-green-600">
 											{data.npk.ph.toFixed(1)}
 										</div>
 									</motion.div>
 
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm">
-										<div className="text-xs text-muted-foreground mb-1">EC (Conductivity)</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											EC (Conductivity)
+										</div>
 										<div className="text-2xl font-bold text-cyan-600">
 											{data.npk.ec.toFixed(3)}
 											<span className="text-sm ml-1">mS/cm</span>
 										</div>
 									</motion.div>
 
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm">
-										<div className="text-xs text-muted-foreground mb-1">Soil Temperature</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											Soil Temperature
+										</div>
 										<div className="text-2xl font-bold text-red-500">
 											{data.npk.soilTemp.toFixed(1)}
 											<span className="text-sm ml-1">°C</span>
 										</div>
 									</motion.div>
 
-									<motion.div variants={itemVariants} className="bg-white p-3 rounded-lg shadow-sm col-span-2">
-										<div className="text-xs text-muted-foreground mb-1">Soil Moisture (NPK)</div>
+									<motion.div
+										variants={itemVariants}
+										className="bg-white p-3 rounded-lg shadow-sm col-span-2"
+									>
+										<div className="text-xs text-muted-foreground mb-1">
+											Soil Moisture (NPK)
+										</div>
 										<div className="text-2xl font-bold text-blue-600">
-											{data.npk.soilMoist.toFixed(1)}
+											{(data.npk.soilMoist || 0).toFixed(1)}
 											<span className="text-sm ml-1">%</span>
 										</div>
 									</motion.div>
@@ -391,7 +478,9 @@ export function SensorCard({ data, isConnected, lastReceived = null, justReceive
 							</div>
 							<div className="bg-gray-50 p-3 rounded-lg">
 								<span className="text-muted-foreground">Watering Count:</span>
-								<span className="ml-2 font-medium block mt-1">{data.count}</span>
+								<span className="ml-2 font-medium block mt-1">
+									{data.count}
+								</span>
 							</div>
 							<div className="bg-gray-50 p-3 rounded-lg">
 								<span className="text-muted-foreground">

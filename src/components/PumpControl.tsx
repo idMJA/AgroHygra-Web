@@ -1,13 +1,13 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Switch } from "@/components/ui/switch";
-import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
-import { Power, AlertTriangle, Droplets } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { AlertTriangle, Droplets, Power } from "lucide-react";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Switch } from "@/components/ui/switch";
 
 interface PumpControlProps {
 	pumpStatus: boolean;
@@ -42,24 +42,35 @@ export function PumpControl({
 			transition={{ duration: 0.4 }}
 		>
 			<Card className="w-full overflow-hidden">
-				<CardHeader className={`${pumpStatus ? 'bg-gradient-to-r from-blue-50 to-cyan-50' : 'bg-gradient-to-r from-gray-50 to-slate-50'} transition-colors duration-500`}>
+				<CardHeader
+					className={`${pumpStatus ? "bg-gradient-to-r from-blue-50 to-cyan-50" : "bg-gradient-to-r from-gray-50 to-slate-50"} transition-colors duration-500`}
+				>
 					<CardTitle className="flex items-center gap-2">
 						<motion.div
 							animate={pumpStatus ? { rotate: 360 } : { rotate: 0 }}
-							transition={{ duration: 2, repeat: pumpStatus ? Infinity : 0, ease: "linear" }}
+							transition={{
+								duration: 2,
+								repeat: pumpStatus ? Infinity : 0,
+								ease: "linear",
+							}}
 						>
-							<Droplets className={`h-5 w-5 ${pumpStatus ? 'text-blue-600' : 'text-gray-600'}`} />
+							<Droplets
+								className={`h-5 w-5 ${pumpStatus ? "text-blue-600" : "text-gray-600"}`}
+							/>
 						</motion.div>
 						Pump Control
 						<AnimatePresence mode="wait">
 							<motion.div
-								key={pumpStatus ? 'on' : 'off'}
+								key={pumpStatus ? "on" : "off"}
 								initial={{ scale: 0.8, opacity: 0 }}
 								animate={{ scale: 1, opacity: 1 }}
 								exit={{ scale: 0.8, opacity: 0 }}
 								transition={{ duration: 0.2 }}
 							>
-								<Badge variant={pumpStatus ? "default" : "secondary"} className={pumpStatus ? 'bg-blue-600' : ''}>
+								<Badge
+									variant={pumpStatus ? "default" : "secondary"}
+									className={pumpStatus ? "bg-blue-600" : ""}
+								>
 									{pumpStatus ? "ON" : "OFF"}
 								</Badge>
 							</motion.div>
@@ -101,10 +112,14 @@ export function PumpControl({
 
 					<motion.div
 						className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl"
-						animate={{ 
-							boxShadow: pumpStatus 
-								? ["0px 0px 0px rgba(59, 130, 246, 0)", "0px 0px 20px rgba(59, 130, 246, 0.3)", "0px 0px 0px rgba(59, 130, 246, 0)"] 
-								: "0px 0px 0px rgba(59, 130, 246, 0)"
+						animate={{
+							boxShadow: pumpStatus
+								? [
+										"0px 0px 0px rgba(59, 130, 246, 0)",
+										"0px 0px 20px rgba(59, 130, 246, 0.3)",
+										"0px 0px 0px rgba(59, 130, 246, 0)",
+									]
+								: "0px 0px 0px rgba(59, 130, 246, 0)",
 						}}
 						transition={{ duration: 2, repeat: pumpStatus ? Infinity : 0 }}
 					>
@@ -134,7 +149,11 @@ export function PumpControl({
 					</motion.div>
 
 					<div className="flex gap-2">
-						<motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+						<motion.div
+							className="flex-1"
+							whileHover={{ scale: 1.02 }}
+							whileTap={{ scale: 0.98 }}
+						>
 							<Button
 								variant="outline"
 								onClick={() => handlePumpToggle(true)}
@@ -145,7 +164,11 @@ export function PumpControl({
 								Start Pump
 							</Button>
 						</motion.div>
-						<motion.div className="flex-1" whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+						<motion.div
+							className="flex-1"
+							whileHover={{ scale: 1.02 }}
+							whileTap={{ scale: 0.98 }}
+						>
 							<Button
 								variant="outline"
 								onClick={() => handlePumpToggle(false)}

@@ -1,11 +1,11 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { AnimatePresence, motion } from "framer-motion";
+import { ScrollText, Server, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Trash2, Server, ScrollText } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 
 interface SystemStatus {
 	device: string;
@@ -77,7 +77,9 @@ export function SystemInfo({
 									</div>
 									<div className="text-sm text-muted-foreground bg-gray-50 p-3 rounded-lg">
 										Last seen:{" "}
-										<strong>{new Date(systemStatus.lastSeen * 1000).toLocaleString()}</strong>
+										<strong>
+											{new Date(systemStatus.lastSeen * 1000).toLocaleString()}
+										</strong>
 									</div>
 								</motion.div>
 							) : (
@@ -92,7 +94,9 @@ export function SystemInfo({
 										animate={{ opacity: [0.5, 1, 0.5] }}
 										transition={{ duration: 2, repeat: Infinity }}
 									>
-										{isConnected ? "⏳ Waiting for system status..." : "🔌 Not connected"}
+										{isConnected
+											? "⏳ Waiting for system status..."
+											: "🔌 Not connected"}
 									</motion.div>
 								</motion.div>
 							)}
@@ -122,7 +126,10 @@ export function SystemInfo({
 									<Badge variant="outline">{logs.length}</Badge>
 								</motion.div>
 							</CardTitle>
-							<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+							<motion.div
+								whileHover={{ scale: 1.05 }}
+								whileTap={{ scale: 0.95 }}
+							>
 								<Button
 									variant="outline"
 									size="sm"

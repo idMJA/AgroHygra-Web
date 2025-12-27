@@ -1,35 +1,35 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
 import mqtt, { type MqttClient } from "mqtt";
+import { useCallback, useEffect, useState } from "react";
 
 export interface NPKData {
-	n: number;        // Nitrogen (mg/kg)
-	p: number;        // Phosphorus (mg/kg)
-	k: number;        // Potassium (mg/kg)
-	ph: number;       // pH level
-	ec: number;       // Electrical conductivity (mS/cm)
+	n: number; // Nitrogen (mg/kg)
+	p: number; // Phosphorus (mg/kg)
+	k: number; // Potassium (mg/kg)
+	ph: number; // pH level
+	ec: number; // Electrical conductivity (mS/cm)
 	soilTemp: number; // Soil temperature (°C)
 	soilMoist: number; // Soil moisture (%)
 }
 
 export interface SensorData {
-    device: string;
-    time: number;
-    soil: number;
-    temp: number;
-    hum: number;
-    air: number;
-    airRaw: number;
-    airGood: boolean;
-    ppm: number;
-    pump: boolean;
-    count: number;
-    wtime: number;
-    uptime: number;
-    tdsRaw?: number;
-    tds?: number;
-    npk?: NPKData;
+	device: string;
+	time: number;
+	soil: number;
+	temp: number;
+	hum: number;
+	air: number;
+	airRaw: number;
+	airGood: boolean;
+	ppm: number;
+	pump: boolean;
+	count: number;
+	wtime: number;
+	uptime: number;
+	tdsRaw?: number;
+	tds?: number;
+	npk?: NPKData;
 }
 
 interface SystemStatus {
@@ -167,7 +167,12 @@ export function useMqtt(): MqttData & {
 						console.log(`❓ Unknown topic: ${topic}`);
 				}
 			} catch (err) {
-				console.error(`❌ Error parsing message from ${topic}:`, err, "Raw payload:", payload);
+				console.error(
+					`❌ Error parsing message from ${topic}:`,
+					err,
+					"Raw payload:",
+					payload,
+				);
 				// treat as plain text log if parsing failed and topic is logs
 				if (topic === "agrohygra/logs") {
 					setLogs((prev) => [
