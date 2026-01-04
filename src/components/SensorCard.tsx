@@ -449,7 +449,7 @@ export function SensorCard({
 											Soil Moisture (NPK)
 										</div>
 										<div className="text-2xl font-bold text-blue-600">
-											{(data.npk.soilMoist || 0).toFixed(1)}
+											{(data.npk.soilMoisture || 0).toFixed(1)}
 											<span className="text-sm ml-1">%</span>
 										</div>
 									</motion.div>

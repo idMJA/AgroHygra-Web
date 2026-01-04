@@ -10,7 +10,7 @@ export interface NPKData {
 	ph: number; // pH level
 	ec: number; // Electrical conductivity (mS/cm)
 	soilTemp: number; // Soil temperature (°C)
-	soilMoist: number; // Soil moisture (%)
+	soilMoisture: number; // Soil moisture (%)
 }
 
 export interface SensorData {
@@ -139,7 +139,13 @@ export function useMqtt(): MqttData & {
 						console.log("🌱 Processing sensor data...");
 						const sensorPayload = JSON.parse(payload) as SensorData;
 						setSensorData(sensorPayload);
+						// 🔄 Auto-update pump status from sensor data
+						setPumpStatus(sensorPayload.pump);
 						console.log("✅ Sensor data updated:", sensorPayload.device);
+						console.log(
+							"💧 Pump status auto-updated from sensor:",
+							sensorPayload.pump,
+						);
 						break;
 					}
 

@@ -9,9 +9,11 @@ import {
 	TrendingUp,
 	Zap,
 } from "lucide-react";
+import { useState } from "react";
 import { MqttDiagnostics } from "@/components/MqttDiagnostics";
 import { PumpControl } from "@/components/PumpControl";
 import { SensorCard } from "@/components/SensorCard";
+import { SoilRecommendation } from "@/components/SoilRecommend";
 import { SystemInfo } from "@/components/SystemInfo";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
@@ -54,6 +56,8 @@ export default function Home() {
 			},
 		},
 	};
+
+	const [activeTab, setActiveTab] = useState<string>("dashboard");
 
 	return (
 		<div className="flex flex-col flex-1 bg-gradient-to-br from-green-50 via-blue-50 to-purple-50">
@@ -119,21 +123,40 @@ export default function Home() {
 
 			{/* Main Content */}
 			<main className="flex-1 container mx-auto px-4 py-6 w-full max-w-7xl">
-				<Tabs defaultValue="dashboard" className="w-full">
-					<TabsList className="grid w-full grid-cols-3 bg-white/80 backdrop-blur-md">
-						<TabsTrigger value="dashboard" className="flex items-center gap-2">
-							<Activity className="h-4 w-4" />
-							Dashboard
-						</TabsTrigger>
-						<TabsTrigger value="control" className="flex items-center gap-2">
-							<Droplets className="h-4 w-4" />
-							Pump Control
-						</TabsTrigger>
-						<TabsTrigger value="system" className="flex items-center gap-2">
-							<Settings className="h-4 w-4" />
-							System
-						</TabsTrigger>
-					</TabsList>
+				<Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+					<div className="w-full mt-16 mb-16">
+						{/* Navigation - Vertical on mobile, horizontal on desktop */}
+						<TabsList className="w-full flex flex-col gap-1.5 md:flex-row md:gap-0 md:grid md:grid-cols-4 bg-transparent md:bg-white/80 backdrop-blur-md md:rounded-none md:shadow-none md:border-0 md:p-0 md:mt-0">
+							<TabsTrigger
+								value="dashboard"
+								className="flex w-full items-center gap-2 whitespace-nowrap justify-start md:justify-center px-3 py-2 md:px-0 md:py-0 rounded-md md:rounded-none hover:bg-gray-50 md:hover:bg-transparent"
+							>
+								<Activity className="h-4 w-4" />
+								<span>Dashboard</span>
+							</TabsTrigger>
+							<TabsTrigger
+								value="ai"
+								className="flex w-full items-center gap-2 whitespace-nowrap justify-start md:justify-center px-3 py-2 md:px-0 md:py-0 rounded-md md:rounded-none hover:bg-gray-50 md:hover:bg-transparent"
+							>
+								<TrendingUp className="h-4 w-4" />
+								<span>AI Analysis</span>
+							</TabsTrigger>
+							<TabsTrigger
+								value="control"
+								className="flex w-full items-center gap-2 whitespace-nowrap justify-start md:justify-center px-3 py-2 md:px-0 md:py-0 rounded-md md:rounded-none hover:bg-gray-50 md:hover:bg-transparent"
+							>
+								<Droplets className="h-4 w-4" />
+								<span>Pump Control</span>
+							</TabsTrigger>
+							<TabsTrigger
+								value="system"
+								className="flex w-full items-center gap-2 whitespace-nowrap justify-start md:justify-center px-3 py-2 md:px-0 md:py-0 rounded-md md:rounded-none hover:bg-gray-50 md:hover:bg-transparent"
+							>
+								<Settings className="h-4 w-4" />
+								<span>System</span>
+							</TabsTrigger>
+						</TabsList>
+					</div>
 
 					<TabsContent value="dashboard" className="space-y-6 mt-6">
 						<motion.div
@@ -237,6 +260,20 @@ export default function Home() {
 									)}
 								</motion.div>
 							</motion.div>
+						</motion.div>
+					</TabsContent>
+
+					<TabsContent value="ai" className="mt-6">
+						<motion.div
+							initial={{ opacity: 0, y: 20 }}
+							animate={{ opacity: 1, y: 0 }}
+							transition={{ duration: 0.5 }}
+						>
+							<SoilRecommendation
+								sensorData={sensorData}
+								isConnected={isConnected}
+								justReceived={justReceived}
+							/>
 						</motion.div>
 					</TabsContent>
 
